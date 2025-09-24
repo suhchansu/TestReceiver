@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <cast-media-player></cast-media-player>
+  <script>
+    const context = cast.framework.CastReceiverContext.getInstance();
+    const playerManager = context.getPlayerManager();
+
+    // LOAD 인터셉터: 기본 autoplay 허용
+    playerManager.setMessageInterceptor(
+      cast.framework.messages.MessageType.LOAD,
+      (loadRequestData) => {
+        if (loadRequestData) {
+          if (loadRequestData.autoplay === undefined) loadRequestData.autoplay = true;
+          // 필요하면 DRM/자막 등 추가 세팅
+        }
+        return loadRequestData;
+      }
+    );
+
+    // Receiver 시작
+    context.start({ disableIdleTimeout: true });
+
+    console.log('[RECEIVER] started');
+  </script>
+  <script type="module" src="./dist/app/ReceiverApp.js"></script>
+</body>
+
+</html>
